@@ -1,0 +1,25 @@
+# Ignore virtual environment
+venv/
+.env
+
+# Ignore dataset files
+datasets/
+*.csv
+*.json
+*.xlsx
+*.parquet
+*.db
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
