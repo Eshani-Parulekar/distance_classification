@@ -1,0 +1,46 @@
+name: Rerun Jupyter Notebook on Code Change
+
+on:
+  push:
+    paths:
+      - '**.ipynb'  # Trigger when any Jupyter Notebook is modified
+      - '**.py'      # Also trigger if related Python scripts are changed
+  pull_request:
+    paths:
+      - '**.ipynb'
+      - '**.py'
+
+jobs:
+  run_notebook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install notebook nbconvert wandb
+
+      - name: Log in to Weights & Biases
+        env:
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+        run: wandb login $WANDB_API_KEY
+
+      - name: Run Jupyter Notebook
+        run: |
+          jupyter nbconvert --to notebook --execute main.ipynb --output main.ipynb
+
+      - name: Commit and Push Updated Notebook
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add your_notebook_output.ipynb
+          git commit -m "Auto-run notebook on code changes [GitHub Actions]" || echo "No changes to commit"
+          git push || echo "No changes to push"
